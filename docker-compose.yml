@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   web:
+    restart: always
     build: .
     command: sh -c "gunicorn --workers 3 app:app --bind 0.0.0.0:8000 --workers=3"
     ports:
