@@ -1,13 +1,17 @@
-FROM python:3.9-slim
-WORKDIR /app
+FROM python:3.9.2-alpine3.13
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    wkhtmltopdf \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-COPY . /app
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+WORKDIR /code
+
+RUN apk update
+RUN apk add wkhtmltopdf libffi-dev xvfb ttf-dejavu fontconfig
+
+RUN ln -s /usr/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
+RUN chmod +x /usr/local/bin/wkhtmltopdf
+
+RUN pip install --upgrade pip
+RUN pip install -U pip setuptools
+COPY requirements.txt /code/
 RUN pip install -r requirements.txt
-ENV FLASK_APP=app.py
-
-CMD ["flask", "run", "--host=0.0.0.0"]
+COPY . /code/
